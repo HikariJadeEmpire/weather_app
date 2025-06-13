@@ -2,7 +2,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 
 class MyWeatherApp extends StatefulWidget {
-  MyWeatherApp({super.key});
+  const MyWeatherApp({super.key});
 
   @override
   State<MyWeatherApp> createState() {
