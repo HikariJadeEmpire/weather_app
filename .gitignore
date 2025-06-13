@@ -30,3 +30,4 @@ doc/api/
 
 android/
 ios/
+.DS_Store
