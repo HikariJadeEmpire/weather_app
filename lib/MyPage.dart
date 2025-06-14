@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 
@@ -11,9 +12,14 @@ class MyWeatherApp extends StatefulWidget {
 }
 
 class _MyWeatherApp extends State<MyWeatherApp> {
-  final primaryColr = Color.fromRGBO(251, 238, 230, 1);
-  final secondColr = Color.fromRGBO(29, 27, 26, 1);
-  final secondHlColr = Color.fromRGBO(62, 60, 58, 0.5);
+  final primaryColr = Color.fromRGBO(255, 255, 255, 1);
+  final secondColr = Color.fromRGBO(19, 19, 20, 1);
+  final secondHlColr = Color.fromRGBO(121, 121, 121, 0.5);
+
+  final limeColr = Color.fromRGBO(218, 240, 89, 1);
+  final blueColr = Color.fromRGBO(47, 49, 245, 1);
+  final lightBlueColr = Color.fromRGBO(0, 166, 192, 1);
+  final platinumColr = Color.fromRGBO(235, 235, 233, 1);
 
   final bool _pinned = false;
   final bool _snap = false;
@@ -21,7 +27,11 @@ class _MyWeatherApp extends State<MyWeatherApp> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
+
+      backgroundColor: secondColr,
+
       // appBar: AppBar(
       //   toolbarHeight: 100,
       //   centerTitle: false,
@@ -103,10 +113,10 @@ class _MyWeatherApp extends State<MyWeatherApp> {
                   width: 140,
                   
                   child: Text(
-                    'ABCD\nEFGHIJK',
+                    'WEATHER\nOBSERVATION',
                     textAlign: TextAlign.justify,
                     style: GoogleFonts.inconsolata(
-                      fontSize: 20,
+                      fontSize: 19,
                       color: primaryColr,
                       fontWeight: FontWeight.bold,
                       ),
@@ -118,52 +128,188 @@ class _MyWeatherApp extends State<MyWeatherApp> {
             ),
           ),
 
-          SliverToBoxAdapter(
-            child: SizedBox(
-              height: 20,
-              child: Center(child: Text('Scroll to see the SliverAppBar in effect.')),
-              ),
-            ),
+          ////////////////////////////
+          ////// START Widgets HERE !!
+          ////////////////////////////
 
-          SliverList(
-            delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
-              return Container(
-                color: index.isOdd ? Colors.white : Colors.black12,
-                height: 100.0,
-                child: Center(child: Text('$index', textScaler: const TextScaler.linear(5))),
-              );
-            }, childCount: 20),
-          ),
+          SliverToBoxAdapter(
+              child: Column(
+                children: [
+                  
+                  Container(
+                    color: secondColr,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      spacing: 20,
+                    
+                      children: [
+                    
+                        Container(
+                          // color: secondColr,
+                          padding: EdgeInsets.all(5.0),
+                          width: 140,
+                          
+                          child: Text(
+                            '// Today\'s\nTemperatures',
+                            textAlign: TextAlign.justify,
+                            style: GoogleFonts.inconsolata(
+                              fontSize: 18,
+                              color: primaryColr,
+                              fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                    
+                        SizedBox(
+                          height: 90,
+                          width: 160,
+                          child: Placeholder(),
+                        ),
+                    
+                      ],
+                    
+                    ),
+                  ),
+
+                  Container(
+                    height: 260,
+                    margin: EdgeInsets.all(5),
+
+                    child: CarouselSlider(
+                        items: [
+
+                          Container(
+                            margin: EdgeInsets.all(10),
+                            color: limeColr,
+                          ),
+
+                          Container(
+                            margin: EdgeInsets.all(10),
+                            color: blueColr,
+                          ),
+
+                          Container(
+                            margin: EdgeInsets.all(10),
+                            color: lightBlueColr,
+                          ),
+
+                        ],
+                      
+                      //Slider Container properties
+                      options: CarouselOptions(
+                        height: 250.0,
+
+                        enlargeCenterPage: true,
+                        enlargeFactor: 0.1,
+                        viewportFraction: 0.94,
+                        // aspectRatio: 3.5 / 2,
+
+                        autoPlay: true,
+                        autoPlayCurve: Curves.easeInOut,
+                        autoPlayInterval: Duration(seconds: 4),
+
+                        enableInfiniteScroll: true,
+                        autoPlayAnimationDuration: Duration(milliseconds: 900),
+
+                      ),
+                    ),
+                  ),
+
+                Container(
+                    color: secondColr,
+                    margin: EdgeInsets.only(bottom: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      spacing: 20,
+                    
+                      children: [
+                    
+                        Container(
+                          // color: secondColr,
+                          padding: EdgeInsets.all(5.0),
+                          width: 140,
+                          
+                          child: Text(
+                            '// Additional\nInformations',
+                            textAlign: TextAlign.justify,
+                            style: GoogleFonts.inconsolata(
+                              fontSize: 18,
+                              color: primaryColr,
+                              fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                    
+                        SizedBox(
+                          height: 90,
+                          width: 160,
+                          child: Placeholder(),
+                        ),
+                    
+                      ],
+                    
+                    ),
+                  ),
+
+                 // To Place
+
+                ],
+              )
+            )
+
+          // The code below is just an examples
+          // SliverList(
+          //   delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
+          //     return Container(
+          //       color: index.isOdd ? Colors.white : Colors.black12,
+          //       height: 100.0,
+          //       child: Center(child: Text('$index', textScaler: const TextScaler.linear(5))),
+          //     );
+          //   }, childCount: 20),
+          // ),
 
         ]
       ),
 
     bottomNavigationBar: Container(
-      color: secondColr,
-      height: 86,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 6,
+      color: primaryColr,
+      height: 360,
+      child: Column(
         children: [
+
           Container(
-            // color: secondHlColr,
-      
-            margin: EdgeInsets.fromLTRB(0, 0, 10, 10),
-            padding: EdgeInsets.all(8),
+            height: 260,
+            // width: 370,
 
-            width: 160,
+            color: primaryColr,
+            // child: Placeholder(),
+            ),
 
-            child: Text(
-              'Designed by\nHikariJadeEmpire',
-              textAlign: TextAlign.justify,
-              style: GoogleFonts.inconsolata(
-                fontSize: 16,
-                color: primaryColr,
-                fontWeight: FontWeight.bold,
-                ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 6,
+            children: [
+              Container(
+                // color: secondHlColr,
+          
+                margin: EdgeInsets.fromLTRB(0, 0, 10, 10),
+                padding: EdgeInsets.all(8),
+          
+                width: 160,
+          
+                child: Text(
+                  'Designed by\nHikariJadeEmpire',
+                  textAlign: TextAlign.justify,
+                  style: GoogleFonts.inconsolata(
+                    fontSize: 16,
+                    color: secondColr,
+                    fontWeight: FontWeight.bold,
+                    ),
+                  ),
+          
               ),
-      
+            ],
           ),
         ],
       ),
