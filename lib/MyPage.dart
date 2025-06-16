@@ -11,7 +11,20 @@ class MyWeatherApp extends StatefulWidget {
   }
 }
 
-class _MyWeatherApp extends State<MyWeatherApp> {
+class _MyWeatherApp extends State<MyWeatherApp> { 
+
+  final String aboutText = '''
+This is a simple yet functional weather application created with the purpose of showcasing programming skills through a real-world project.
+The app includes the following features:
+
+- Temperature Data, Weather Forecast, Humidity Information
+- Wind Speed, Atmospheric Pressure
+- Front-End Design Gimmicks
+
+This app is built to demonstrate a blend of API integration, responsive design, and clean code architecture, making it not just a useful tool, but also a technical portfolio piece.
+
+                    ''';
+
   final primaryColr = Color.fromRGBO(255, 255, 255, 1);
   final secondColr = Color.fromRGBO(19, 19, 20, 1);
   final secondHlColr = Color.fromRGBO(121, 121, 121, 0.5);
@@ -20,6 +33,7 @@ class _MyWeatherApp extends State<MyWeatherApp> {
   final blueColr = Color.fromRGBO(47, 49, 245, 1);
   final lightBlueColr = Color.fromRGBO(0, 166, 192, 1);
   final platinumColr = Color.fromRGBO(235, 235, 233, 1);
+  final platinumHlColr = Color.fromRGBO(235, 235, 233, 0.3);
 
   final bool _pinned = false;
   final bool _snap = false;
@@ -79,8 +93,8 @@ class _MyWeatherApp extends State<MyWeatherApp> {
               Container(
                 // color: secondHlColr,
                 margin: EdgeInsets.only(top: 0, right: 30),
-                height: 80,
-                width: 60,
+                height: 78,
+                width: 56,
                 child: InkWell(
                   
                   radius: 10,
@@ -89,14 +103,14 @@ class _MyWeatherApp extends State<MyWeatherApp> {
                   highlightColor: secondHlColr,
                 
                   child: IconButton(
-                    padding: EdgeInsets.all(4),
+                    padding: EdgeInsets.all(2),
                     onPressed: () {
                       debugPrint('refresh');
                     },
                     icon: Icon(Icons.refresh_rounded),
                     splashRadius: 8,
                   
-                    iconSize: 26,
+                    iconSize: 25,
                   
                     highlightColor: secondHlColr,
                     color: primaryColr,
@@ -155,8 +169,8 @@ class _MyWeatherApp extends State<MyWeatherApp> {
                   Container(
                     color: secondColr,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      spacing: 18,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      // spacing: 18,
                     
                       children: [
                     
@@ -227,19 +241,31 @@ class _MyWeatherApp extends State<MyWeatherApp> {
                     child: CarouselSlider(
                         items: [
 
-                          Container(
-                            margin: EdgeInsets.all(10),
-                            color: limeColr,
+                          CarouselItem(
+                            textColr: secondColr,
+                            bgColr: limeColr,
+                            imgs: 'images/hot_level2.gif',
+
+                            temperatureNum: '33',
+                            timee: '09:00',
                           ),
 
-                          Container(
-                            margin: EdgeInsets.all(10),
-                            color: blueColr,
+                          CarouselItem(
+                            textColr: primaryColr,
+                            bgColr: blueColr,
+                            imgs: 'images/rainfall_level1.gif',
+
+                            temperatureNum: '28',
+                            timee: '12:00',
                           ),
 
-                          Container(
-                            margin: EdgeInsets.all(10),
-                            color: lightBlueColr,
+                          CarouselItem(
+                            textColr: secondColr,
+                            bgColr: lightBlueColr,
+                            imgs: 'images/cold_level1.gif',
+
+                            temperatureNum: '25',
+                            timee: '14:00',
                           ),
 
                         ],
@@ -268,7 +294,7 @@ class _MyWeatherApp extends State<MyWeatherApp> {
                     color: secondColr,
                     margin: EdgeInsets.only(bottom: 10),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       spacing: 20,
                     
                       children: [
@@ -302,8 +328,8 @@ class _MyWeatherApp extends State<MyWeatherApp> {
                  Container(
                     margin: EdgeInsets.fromLTRB(10, 10, 10, 30),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      spacing: 18,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      // spacing: 18,
                     
                       children: [
                     
@@ -336,7 +362,9 @@ class _MyWeatherApp extends State<MyWeatherApp> {
               )
             )
 
-          // The code below is just an examples
+
+          ////// The code below is just an examples
+
           // SliverList(
           //   delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
           //     return Container(
@@ -352,62 +380,16 @@ class _MyWeatherApp extends State<MyWeatherApp> {
 
     bottomNavigationBar: Container(
       color: primaryColr,
-      height: 360,
+      height: 160,
       child: Column(
         children: [
 
           Container(
-            height: 260,
-            // width: 370,
 
-            color: primaryColr,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget> [
-
-                Container(
-                  height: 30,
-                  margin: EdgeInsets.fromLTRB(26, 20, 16, 10),
-                  // color: secondHlColr,
-                  
-                  child: Text(
-                    '// About This Weather App',
-                    textAlign: TextAlign.justify,
-                    style: GoogleFonts.inconsolata(
-                      fontSize: 14,
-                      color: secondColr,
-                      fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                  ),
-
-                  Container(
-                    height: 200,
-                    margin: EdgeInsets.only(left: 26, right: 26),
-                    // color: secondHlColr,
-                    child: Text(
-                      '''
-This is a simple yet functional weather application created with the purpose of showcasing programming skills through a real-world project.
-The app includes the following features:
-
-- Temperature Data, Weather Forecast, Humidity Information
-- Wind Speed, Atmospheric Pressure
-- Front-End Design Gimmicks
-
-This app is built to demonstrate a blend of API integration, responsive design, and clean code architecture, making it not just a useful tool, but also a technical portfolio piece.
-                      ''',
-                      textAlign: TextAlign.justify,
-                      style: GoogleFonts.inconsolata(
-                        fontSize: 10,
-                        color: secondColr,
-                        fontWeight: FontWeight.normal,
-                        ),
-                      ),
-
-                  ),
-
-                ],
-              ),
+            margin: EdgeInsets.all(4),
+            height: 24,
+            
+            child: BottomInfo(pcolr: primaryColr, scolr: secondColr, shcolr: platinumHlColr, textLong: aboutText),
             ),
 
           Row(
@@ -418,7 +400,7 @@ This app is built to demonstrate a blend of API integration, responsive design, 
               Container(
                 // color: secondHlColr,
           
-                margin: EdgeInsets.fromLTRB(0, 0, 10, 10),
+                margin: EdgeInsets.fromLTRB(0, 10, 10, 10),
                 padding: EdgeInsets.all(8),
           
                 width: 160,
@@ -445,6 +427,139 @@ This app is built to demonstrate a blend of API integration, responsive design, 
 }
 
 //// The stateless widget below can be uses as item which is re-useable
+
+
+class CarouselItem extends StatelessWidget {
+
+  final Color bgColr;
+  final Color textColr;
+  final String imgs;
+  final String timee;
+  final String temperatureNum;
+
+  const CarouselItem({
+      super.key,
+      required this.bgColr,
+      required this.textColr,
+      required this.imgs,
+      required this.timee,
+      required this.temperatureNum,
+    });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.all(10),
+      padding: EdgeInsets.all(6),
+      color: bgColr,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        
+        children: [
+
+          Image.asset(
+                imgs,
+                height: 100,
+              ),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+              
+                  Container(
+                    height: 30,
+                    width: 100,
+                    padding: EdgeInsets.all(4),
+                    // color: secondHlColr,
+                    child: Text(
+                    'Time',
+                    textAlign: TextAlign.start,
+                    style: GoogleFonts.inconsolata(
+                      fontSize: 18,
+                      color: textColr,
+                      fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                  ),
+              
+                  Container(
+                    height: 56,
+                    width: 100,
+                    padding: EdgeInsets.all(4),
+                    // color: secondHlColr,
+                    child: Text(
+                    timee,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.inconsolata(
+                      fontSize: 36,
+                      color: textColr,
+                      fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+              
+                ],
+              ),
+
+              Container(
+                color: textColr,
+                height: 90,
+                width: 2,
+              ),
+
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+
+                  Container(
+                    height: 60,
+                    width: 110,
+                    padding: EdgeInsets.all(4),
+                    // color: secondHlColr,
+                    child: Text(
+                    temperatureNum,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.inconsolata(
+                      fontSize: 36,
+                      color: textColr,
+                      fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+
+                  Container(
+                    height: 26,
+                    width: 110,
+                    padding: EdgeInsets.all(4),
+                    // color: secondHlColr,
+                    child: Text(
+                    'CELCIUS',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.inconsolata(
+                      fontSize: 14,
+                      color: textColr,
+                      fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                  ),
+
+                ],
+              ),
+
+            ],
+          ),
+
+
+        ],
+      ),
+    );
+  }
+}
+
 
 class NumItem extends StatelessWidget {
 
@@ -496,6 +611,104 @@ class NumItem extends StatelessWidget {
         ),
     
       ],
+    );
+  }
+}
+
+
+class BottomInfo extends StatelessWidget {
+
+  final Color pcolr;
+  final Color scolr;
+  final Color shcolr;
+  final String textLong;
+
+  const BottomInfo({
+    super.key,
+    required this.pcolr,
+    required this.scolr,
+    required this.shcolr,
+    required this.textLong,
+    });
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+
+      style: ButtonStyle(
+          padding: WidgetStateProperty.all(EdgeInsets.all(6)),
+          elevation: WidgetStateProperty.all(0),
+          backgroundColor: WidgetStateProperty.all(pcolr),
+          surfaceTintColor: WidgetStateProperty.all(pcolr),
+          overlayColor: WidgetStateProperty.all(shcolr),
+          minimumSize: WidgetStatePropertyAll(Size(400, 10)),
+          
+        ),
+
+      onPressed: () {
+        showModalBottomSheet(
+    
+        context: context,
+        isDismissible: true,
+
+        backgroundColor: pcolr,
+        barrierColor: Color.fromRGBO(0, 0, 0, 0.2),
+        shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(0.2),
+            ),
+        
+        isScrollControlled: true,
+
+        builder: (context) {
+          return Container(
+            height: 460,
+            padding: EdgeInsets.only(left: 26, right: 26),
+            child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget> [
+                
+                    Container(
+                      height: 30,
+                      margin: EdgeInsets.fromLTRB(0, 20, 0, 10),
+                      // color: secondHlColr,
+                      
+                      child: Text(
+                        '// About This Weather App',
+                        textAlign: TextAlign.justify,
+                        style: GoogleFonts.inconsolata(
+                          fontSize: 15,
+                          color: scolr,
+                          fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(
+                        height: 300,
+                        child: Text(
+                          textLong,
+                          textAlign: TextAlign.justify,
+                          style: GoogleFonts.inconsolata(
+                            fontSize: 11,
+                            color: scolr,
+                            fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                      ),
+                
+                    ],
+                  ),
+          );
+            },
+          );
+        },
+
+      child: Icon(
+        Icons.keyboard_arrow_up,
+        color: scolr,
+        size: 12,
+        ),
+      
     );
   }
 }
