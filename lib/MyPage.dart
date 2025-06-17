@@ -1,6 +1,12 @@
+import 'dart:convert';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+import 'package:my_weather/secret.dart';
+import 'myComponent.dart';
 
 class MyWeatherApp extends StatefulWidget {
   const MyWeatherApp({super.key});
@@ -39,6 +45,106 @@ This app is built to demonstrate a blend of API integration, responsive design, 
   final bool _snap = false;
   final bool _floating = true;
 
+  String cityName = 'Bangkok';
+
+  List<dynamic>? forecastTemp = List.filled(4, 
+    {
+      "dt": 1750140000,
+      "main": {
+        "temp": 273.15,
+        "feels_like": 273.15,
+        "temp_min": 273.15,
+        "temp_max": 273.15,
+        "pressure": 0,
+        "sea_level": 0,
+        "grnd_level": 0,
+        "humidity": 0,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 001,
+          "main": "NULL",
+          "description": "NULL",
+          "icon": "NULL"
+        }
+      ],
+      "clouds": {
+        "all": 0
+      },
+      "wind": {
+        "speed": 0,
+        "deg": 0,
+        "gust": 0
+      },
+      "visibility": 0,
+      "pop": 0,
+      "sys": {
+        "pod": "NULL"
+      },
+      "dt_txt": "2025-06-17 06:00:00"
+    }
+    , growable: true);
+
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    getWeatherApi();
+  }
+
+  Future getWeatherApi() async {
+    try {
+
+      setState(() {
+        isLoading = true;
+      });
+
+      final reslt = await http.get(
+        Uri.parse('https://api.openweathermap.org/data/2.5/forecast?q=$cityName&APPID=$openWeatherApiKey')
+      );
+
+      final data = jsonDecode(reslt.body);
+
+      if ( data['cod'] != '200' ) {
+        throw 'Reponse code : ${data['cod']}';
+      }
+
+      setState(() {
+
+        bool steps = true;
+        for (int i = 0 ; steps ; i++) {
+
+          DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(data['list'][i]['dt'] * 1000, isUtc: true);
+
+          if (
+            dateTime.hour >= DateTime.now().hour 
+            && dateTime.day >= DateTime.now().day
+          ) {
+              forecastTemp![0] = data['list'][i - 1];
+              forecastTemp![1] = data['list'][i];
+              forecastTemp![2] = data['list'][i + 1];
+              forecastTemp![3] = data['list'][i + 2];
+              steps = false;
+          }
+
+        }
+
+        isLoading = false;
+
+      });
+      
+      return data;
+
+    }
+    catch (e) {
+      // throw e;
+      debugPrint('Error as : $e');
+    }
+
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -73,310 +179,360 @@ This app is built to demonstrate a blend of API integration, responsive design, 
       //   ),
       // ),
       
-      body: CustomScrollView(
-        slivers : <Widget>[
-          
-          SliverAppBar(
+      body:  
+        FutureBuilder(
+          future: getWeatherApi(),
+          builder: (context, asyncSnapshot) {
 
-            floating: _floating,
-            snap: _snap,
-            pinned: _pinned,
+            // debugPrint('$asyncSnapshot');
 
-            centerTitle: false,
-            expandedHeight: 100,
-            collapsedHeight: 70,
+            if (asyncSnapshot.hasError) {
+              return Center(
+                child: Text(asyncSnapshot.error.toString()),
+              );
+            }
 
-            backgroundColor: secondColr,
+            return CustomScrollView(
+            slivers : <Widget>[
+              
+              SliverAppBar(
             
-            actions: [
-
-              Container(
-                // color: secondHlColr,
-                margin: EdgeInsets.only(top: 0, right: 30),
-                height: 78,
-                width: 56,
-                child: InkWell(
-                  
-                  radius: 10,
-                  borderRadius: BorderRadius.all(Radius.circular(800)),
+                floating: _floating,
+                snap: _snap,
+                pinned: _pinned,
+            
+                centerTitle: false,
+                expandedHeight: 100,
+                collapsedHeight: 70,
+            
+                backgroundColor: secondColr,
                 
-                  highlightColor: secondHlColr,
-                
-                  child: IconButton(
-                    padding: EdgeInsets.all(2),
-                    onPressed: () {
-                      debugPrint('refresh');
-                    },
-                    icon: Icon(Icons.refresh_rounded),
-                    splashRadius: 8,
-                  
-                    iconSize: 25,
-                  
-                    highlightColor: secondHlColr,
-                    color: primaryColr,
-                  ),
-                ),
-              ),
-
-            ],
-          
-            flexibleSpace: FlexibleSpaceBar(
-              title: Container(
-                // color: secondColr,
-                padding: EdgeInsets.all(5.0),
-                width: 140,
-                
-                child: Text(
-                  'WEATHER\nOBSERVATION',
-                  textAlign: TextAlign.justify,
-                  style: GoogleFonts.inconsolata(
-                    fontSize: 19,
-                    color: primaryColr,
-                    fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-
-            // background: FlutterLogo(),
-
-            ),
-          ),
-
-          ////////////////////////////
-          ////// START Widgets HERE !!
-          ////////////////////////////
-
-          SliverToBoxAdapter(
-              child: Column(
-                children: [
-
+                actions: [
+            
                   Container(
                     // color: secondHlColr,
-                    margin: EdgeInsets.all(6.0),
-                    height: 40,
+                    margin: EdgeInsets.only(top: 0, right: 30),
+                    height: 78,
+                    width: 56,
+                    child: InkWell(
+                      
+                      radius: 10,
+                      borderRadius: BorderRadius.all(Radius.circular(800)),
+                    
+                      highlightColor: secondHlColr,
+                    
+                      child: IconButton(
+                        padding: EdgeInsets.all(2),
+                        onPressed: () {
+                          debugPrint('refresh');
+                        },
+                        icon: Icon(Icons.refresh_rounded),
+                        splashRadius: 8,
+                      
+                        iconSize: 25,
+                      
+                        highlightColor: secondHlColr,
+                        color: primaryColr,
+                      ),
+                    ),
+                  ),
+            
+                ],
+              
+                flexibleSpace: FlexibleSpaceBar(
+                  title: Container(
+                    // color: secondColr,
+                    padding: EdgeInsets.all(5.0),
+                    width: 140,
                     
                     child: Text(
-                      'LOCATION : Bangkok, Thailand',
+                      'WEATHER\nOBSERVATION',
                       textAlign: TextAlign.justify,
                       style: GoogleFonts.inconsolata(
-                        fontSize: 16,
+                        fontSize: 19,
                         color: primaryColr,
-                        fontWeight: FontWeight.normal,
+                        fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                  
-                  Container(
-                    color: secondColr,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      // spacing: 18,
-                    
-                      children: [
-                    
-                        Container(
-                          // color: secondHlColr,
-                          padding: EdgeInsets.all(10.0),
-                          width: 140,
-                          
-                          child: Text(
-                            '// Today\'s\nTemperatures',
-                            textAlign: TextAlign.justify,
-                            style: GoogleFonts.inconsolata(
-                              fontSize: 18,
-                              color: primaryColr,
-                              fontWeight: FontWeight.normal,
-                              ),
+            
+                // background: FlutterLogo(),
+            
+                ),
+              ),
+            
+              ////////////////////////////
+              ////// START Widgets HERE !!
+              ////////////////////////////
+            
+              SliverToBoxAdapter(
+                  child: Column(
+                    children: [
+            
+                      Container(
+                        // color: secondHlColr,
+                        margin: EdgeInsets.all(6.0),
+                        height: 40,
+                        
+                        child: Text(
+                          'LOCATION : $cityName',
+                          textAlign: TextAlign.justify,
+                          style: GoogleFonts.inconsolata(
+                            fontSize: 16,
+                            color: primaryColr,
+                            fontWeight: FontWeight.normal,
                             ),
                           ),
+                        ),
+                      
+                      Container(
+                        color: secondColr,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          // spacing: 18,
                         
-                        Container(
-                            width: 3,
-                            height: 80,
-                            color: secondHlColr,
-                          ),
-
-                        NumItem(
-                          colr: primaryColr, 
-                          textLabel: 'CELCIUS', 
-                          stringNum: '31',
-                          ),
-                        
-                        Column(
                           children: [
                         
-                            Image.asset(
-                              'images/waterfall.gif',
-                              height: 45,
-                            ),
-                        
                             Container(
-                              height: 40,
-                              width: 80,
-                              padding: EdgeInsets.all(8),
-                              color: secondHlColr,
+                              // color: secondHlColr,
+                              padding: EdgeInsets.all(10.0),
+                              width: 140,
+                              
                               child: Text(
-                              'Sunny',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.inconsolata(
-                                fontSize: 16,
-                                color: primaryColr,
-                                fontWeight: FontWeight.normal,
+                                '// Today\'s\nTemperatures',
+                                textAlign: TextAlign.justify,
+                                style: GoogleFonts.inconsolata(
+                                  fontSize: 18,
+                                  color: primaryColr,
+                                  fontWeight: FontWeight.normal,
+                                  ),
                                 ),
                               ),
+                            
+                            Container(
+                                width: 3,
+                                height: 80,
+                                color: secondHlColr,
+                              ),
+            
+                            NumItem(
+                              colr: primaryColr, 
+                              textLabel: 'CELCIUS', 
+                              stringNum: (forecastTemp?[0]['main']['temp'] - 273.15).toStringAsFixed(2),
+                              ),
+                            
+                            Column(
+                              children: [
+                            
+                                Image.asset(
+                                  'images/waterfall.gif',
+                                  height: 45,
+                                ),
+                            
+                                Container(
+                                  height: 40,
+                                  width: 80,
+                                  padding: EdgeInsets.all(8),
+                                  color: secondHlColr,
+                                  child: Text(
+                                  forecastTemp?[0]['weather'][0]['main'],
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.inconsolata(
+                                    fontSize: 16,
+                                    color: primaryColr,
+                                    fontWeight: FontWeight.normal,
+                                    ),
+                                  ),
+                                ),
+                            
+                              ],
                             ),
                         
                           ],
+                        
                         ),
-                    
-                      ],
-                    
-                    ),
-                  ),
-
-                  Container(
-                    height: 260,
-                    margin: EdgeInsets.all(5),
-
-                    child: CarouselSlider(
-                        items: [
-
-                          CarouselItem(
-                            textColr: secondColr,
-                            bgColr: limeColr,
-                            imgs: 'images/hot_level2.gif',
-
-                            temperatureNum: '33',
-                            timee: '09:00',
-                          ),
-
-                          CarouselItem(
-                            textColr: primaryColr,
-                            bgColr: blueColr,
-                            imgs: 'images/rainfall_level1.gif',
-
-                            temperatureNum: '28',
-                            timee: '12:00',
-                          ),
-
-                          CarouselItem(
-                            textColr: secondColr,
-                            bgColr: lightBlueColr,
-                            imgs: 'images/cold_level1.gif',
-
-                            temperatureNum: '25',
-                            timee: '14:00',
-                          ),
-
-                        ],
-                      
-                      //Slider Container properties
-                      options: CarouselOptions(
-                        height: 250.0,
-
-                        enlargeCenterPage: true,
-                        enlargeFactor: 0.1,
-                        viewportFraction: 0.94,
-                        // aspectRatio: 3.5 / 2,
-
-                        autoPlay: true,
-                        autoPlayCurve: Curves.easeInOut,
-                        autoPlayInterval: Duration(seconds: 4),
-
-                        enableInfiniteScroll: true,
-                        autoPlayAnimationDuration: Duration(milliseconds: 900),
-
                       ),
-                    ),
-                  ),
-
-                Container(
-                    color: secondColr,
-                    margin: EdgeInsets.only(bottom: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      spacing: 20,
-                    
-                      children: [
-                    
-                        Container(
-                          // color: secondColr,
-                          padding: EdgeInsets.all(5.0),
-                          width: 140,
-                          
-                          child: Text(
-                            '// Additional\nInformations',
-                            textAlign: TextAlign.justify,
-                            style: GoogleFonts.inconsolata(
-                              fontSize: 18,
-                              color: primaryColr,
-                              fontWeight: FontWeight.normal,
-                              ),
+            
+                      Container(
+                        // color: secondHlColr,
+                        margin: EdgeInsets.fromLTRB(6, 12, 6, 2),
+                        height: 26,
+                        
+                        child: Text(
+                          'feels like : ${(forecastTemp?[0]['main']['feels_like'] - 273.15).toStringAsFixed(2)} celcius',
+                          textAlign: TextAlign.justify,
+                          style: GoogleFonts.inconsolata(
+                            fontSize: 14,
+                            color: primaryColr,
+                            fontWeight: FontWeight.normal,
                             ),
                           ),
-                    
-                        Image.asset(
-                          'images/running.gif',
-                          width: 160,
+                        ),
+            
+                      Container(
+                        height: 260,
+                        margin: EdgeInsets.all(5),
+            
+                        child: CarouselSlider(
+                            items: [
+            
+                              CarouselItem(
+                                textColr: secondColr,
+                                bgColr: limeColr,
+                                imgs: 'images/hot_level2.gif',
+            
+                                temperatureNum: (forecastTemp?[1]['main']['temp'] - 273.15).toStringAsFixed(2),
+                                timee: (forecastTemp![1]['dt_txt']).substring(11, 16),
+                                ddate: (forecastTemp![1]['dt_txt']).substring(0, 10),
+                              ),
+            
+                              CarouselItem(
+                                textColr: primaryColr,
+                                bgColr: blueColr,
+                                imgs: 'images/rainfall_level1.gif',
+            
+                                temperatureNum: (forecastTemp?[2]['main']['temp'] - 273.15).toStringAsFixed(2),
+                                timee: (forecastTemp![2]['dt_txt']).substring(11, 16),
+                                ddate: (forecastTemp![1]['dt_txt']).substring(0, 10),
+                              ),
+            
+                              CarouselItem(
+                                textColr: secondColr,
+                                bgColr: lightBlueColr,
+                                imgs: 'images/cold_level1.gif',
+            
+                                temperatureNum: (forecastTemp?[3]['main']['temp'] - 273.15).toStringAsFixed(2),
+                                timee: (forecastTemp![3]['dt_txt']).substring(11, 16),
+                                ddate: (forecastTemp![1]['dt_txt']).substring(0, 10),
+                              ),
+            
+                            ],
+                          
+                          //Slider Container properties
+                          options: CarouselOptions(
+                            height: 250.0,
+            
+                            enlargeCenterPage: true,
+                            enlargeFactor: 0.1,
+                            viewportFraction: 0.94,
+                            // aspectRatio: 3.5 / 2,
+            
+                            autoPlay: true,
+                            autoPlayCurve: Curves.easeInOut,
+                            autoPlayInterval: Duration(seconds: 4),
+            
+                            enableInfiniteScroll: true,
+                            autoPlayAnimationDuration: Duration(milliseconds: 900),
+            
                           ),
-                    
-                      ],
-                    
-                    ),
-                  ),
-
-                 Container(
-                    margin: EdgeInsets.fromLTRB(10, 10, 10, 30),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      // spacing: 18,
-                    
-                      children: [
-                    
-                        NumItem(
-                          colr: primaryColr, 
-                          textLabel: 'Humidity', 
-                          stringNum: '200',
+                        ),
+                      ),
+            
+                    Container(
+                        // color: secondHlColr,
+                        margin: EdgeInsets.fromLTRB(6, 0, 6, 0),
+                        height: 36,
+                        
+                        child: Text(
+                          'min : ${(forecastTemp?[0]['main']['temp_min'] - 273.15).toStringAsFixed(2)} celcius      max : ${(forecastTemp?[0]['main']['temp_max'] - 273.15).toStringAsFixed(2)} celcius',
+                          textAlign: TextAlign.justify,
+                          style: GoogleFonts.inconsolata(
+                            fontSize: 14,
+                            color: primaryColr,
+                            fontWeight: FontWeight.normal,
+                            ),
                           ),
-                    
-                        NumItem(
-                          colr: primaryColr, 
-                          textLabel: 'Wind', 
-                          stringNum: '00',
-                          ),
-
-                        NumItem(
-                          colr: primaryColr, 
-                          textLabel: 'Pressure', 
-                          stringNum: '00',
-                          ),
-                    
-                      ],
-                    
-                    ),
-                  ),
-
-                 // To Place
-
-                ],
-              )
-            )
-
-
-          ////// The code below is just an examples
-
-          // SliverList(
-          //   delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
-          //     return Container(
-          //       color: index.isOdd ? Colors.white : Colors.black12,
-          //       height: 100.0,
-          //       child: Center(child: Text('$index', textScaler: const TextScaler.linear(5))),
-          //     );
-          //   }, childCount: 20),
-          // ),
-
-        ]
-      ),
+                        ),
+            
+                    Container(
+                        color: secondColr,
+                        margin: EdgeInsets.only(bottom: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          spacing: 20,
+                        
+                          children: [
+                        
+                            Container(
+                              // color: secondColr,
+                              padding: EdgeInsets.all(5.0),
+                              width: 140,
+                              
+                              child: Text(
+                                '// Additional\nInformations',
+                                textAlign: TextAlign.justify,
+                                style: GoogleFonts.inconsolata(
+                                  fontSize: 18,
+                                  color: primaryColr,
+                                  fontWeight: FontWeight.normal,
+                                  ),
+                                ),
+                              ),
+                        
+                            Image.asset(
+                              'images/running.gif',
+                              width: 160,
+                              ),
+                        
+                          ],
+                        
+                        ),
+                      ),
+            
+                     Container(
+                        margin: EdgeInsets.fromLTRB(10, 10, 10, 30),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          // spacing: 18,
+                        
+                          children: [
+                        
+                            NumItem(
+                              colr: primaryColr, 
+                              textLabel: 'Humidity', 
+                              stringNum: (forecastTemp?[0]['main']['humidity']).toStringAsFixed(2),
+                              ),
+                        
+                            NumItem(
+                              colr: primaryColr, 
+                              textLabel: 'Wind (speed)', 
+                              stringNum: (forecastTemp?[0]['wind']['speed']).toStringAsFixed(2),
+                              ),
+            
+                            NumItem(
+                              colr: primaryColr, 
+                              textLabel: 'Pressure', 
+                              stringNum: (forecastTemp?[0]['main']['pressure']).toString(),
+                              ),
+                        
+                          ],
+                        
+                        ),
+                      ),
+            
+                     // To Place
+            
+                    ],
+                  )
+                )
+            
+            
+              ////// The code below is just an examples
+            
+              // SliverList(
+              //   delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
+              //     return Container(
+              //       color: index.isOdd ? Colors.white : Colors.black12,
+              //       height: 100.0,
+              //       child: Center(child: Text('$index', textScaler: const TextScaler.linear(5))),
+              //     );
+              //   }, childCount: 20),
+              // ),
+            
+            ]
+                  );
+          }
+        ),
 
     bottomNavigationBar: Container(
       color: primaryColr,
@@ -422,293 +578,6 @@ This app is built to demonstrate a blend of API integration, responsive design, 
       ),
     ),
 
-    );
-  }
-}
-
-//// The stateless widget below can be uses as item which is re-useable
-
-
-class CarouselItem extends StatelessWidget {
-
-  final Color bgColr;
-  final Color textColr;
-  final String imgs;
-  final String timee;
-  final String temperatureNum;
-
-  const CarouselItem({
-      super.key,
-      required this.bgColr,
-      required this.textColr,
-      required this.imgs,
-      required this.timee,
-      required this.temperatureNum,
-    });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(10),
-      padding: EdgeInsets.all(6),
-      color: bgColr,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        
-        children: [
-
-          Image.asset(
-                imgs,
-                height: 100,
-              ),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-              
-                  Container(
-                    height: 30,
-                    width: 100,
-                    padding: EdgeInsets.all(4),
-                    // color: secondHlColr,
-                    child: Text(
-                    'Time',
-                    textAlign: TextAlign.start,
-                    style: GoogleFonts.inconsolata(
-                      fontSize: 18,
-                      color: textColr,
-                      fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                  ),
-              
-                  Container(
-                    height: 56,
-                    width: 100,
-                    padding: EdgeInsets.all(4),
-                    // color: secondHlColr,
-                    child: Text(
-                    timee,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.inconsolata(
-                      fontSize: 36,
-                      color: textColr,
-                      fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-              
-                ],
-              ),
-
-              Container(
-                color: textColr,
-                height: 90,
-                width: 2,
-              ),
-
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-
-                  Container(
-                    height: 60,
-                    width: 110,
-                    padding: EdgeInsets.all(4),
-                    // color: secondHlColr,
-                    child: Text(
-                    temperatureNum,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.inconsolata(
-                      fontSize: 36,
-                      color: textColr,
-                      fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-
-                  Container(
-                    height: 26,
-                    width: 110,
-                    padding: EdgeInsets.all(4),
-                    // color: secondHlColr,
-                    child: Text(
-                    'CELCIUS',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.inconsolata(
-                      fontSize: 14,
-                      color: textColr,
-                      fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                  ),
-
-                ],
-              ),
-
-            ],
-          ),
-
-
-        ],
-      ),
-    );
-  }
-}
-
-
-class NumItem extends StatelessWidget {
-
-  final Color colr;
-  final String textLabel;
-  final String stringNum;
-
-  const NumItem({
-    super.key,
-    required this.colr,
-    required this.textLabel,
-    required this.stringNum,
-    });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-    
-        SizedBox(
-          height: 45,
-          width: 90,
-    
-          child: Text(
-          stringNum,
-          textAlign: TextAlign.center,
-          style: GoogleFonts.inconsolata(
-            fontSize: 36,
-            color: colr,
-            fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-    
-        Container(
-          height: 40,
-          width: 90,
-          padding: EdgeInsets.all(8),
-          // color: secondHlColr,
-          child: Text(
-          textLabel,
-          textAlign: TextAlign.center,
-          style: GoogleFonts.inconsolata(
-            fontSize: 16,
-            color: colr,
-            fontWeight: FontWeight.normal,
-            ),
-          ),
-        ),
-    
-      ],
-    );
-  }
-}
-
-
-class BottomInfo extends StatelessWidget {
-
-  final Color pcolr;
-  final Color scolr;
-  final Color shcolr;
-  final String textLong;
-
-  const BottomInfo({
-    super.key,
-    required this.pcolr,
-    required this.scolr,
-    required this.shcolr,
-    required this.textLong,
-    });
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-
-      style: ButtonStyle(
-          padding: WidgetStateProperty.all(EdgeInsets.all(6)),
-          elevation: WidgetStateProperty.all(0),
-          backgroundColor: WidgetStateProperty.all(pcolr),
-          surfaceTintColor: WidgetStateProperty.all(pcolr),
-          overlayColor: WidgetStateProperty.all(shcolr),
-          minimumSize: WidgetStatePropertyAll(Size(400, 10)),
-          
-        ),
-
-      onPressed: () {
-        showModalBottomSheet(
-    
-        context: context,
-        isDismissible: true,
-
-        backgroundColor: pcolr,
-        barrierColor: Color.fromRGBO(0, 0, 0, 0.2),
-        shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(0.2),
-            ),
-        
-        isScrollControlled: true,
-
-        builder: (context) {
-          return Container(
-            height: 460,
-            padding: EdgeInsets.only(left: 26, right: 26),
-            child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget> [
-                
-                    Container(
-                      height: 30,
-                      margin: EdgeInsets.fromLTRB(0, 20, 0, 10),
-                      // color: secondHlColr,
-                      
-                      child: Text(
-                        '// About This Weather App',
-                        textAlign: TextAlign.justify,
-                        style: GoogleFonts.inconsolata(
-                          fontSize: 15,
-                          color: scolr,
-                          fontWeight: FontWeight.normal,
-                          ),
-                        ),
-                      ),
-
-                      SizedBox(
-                        height: 300,
-                        child: Text(
-                          textLong,
-                          textAlign: TextAlign.justify,
-                          style: GoogleFonts.inconsolata(
-                            fontSize: 11,
-                            color: scolr,
-                            fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                      ),
-                
-                    ],
-                  ),
-          );
-            },
-          );
-        },
-
-      child: Icon(
-        Icons.keyboard_arrow_up,
-        color: scolr,
-        size: 12,
-        ),
-      
     );
   }
 }
