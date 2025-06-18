@@ -49,7 +49,7 @@ This app is built to demonstrate a blend of API integration, responsive design, 
 
   List<dynamic>? forecastTemp = List.filled(4, 
     {
-      "dt": 1750140000,
+      "dt": 1750291200,
       "main": {
         "temp": 273.15,
         "feels_like": 273.15,
@@ -82,11 +82,9 @@ This app is built to demonstrate a blend of API integration, responsive design, 
       "sys": {
         "pod": "NULL"
       },
-      "dt_txt": "2025-06-17 06:00:00"
+      "dt_txt": "2025-06-17 00:00:00"
     }
     , growable: true);
-
-  bool isLoading = false;
 
   @override
   void initState() {
@@ -95,11 +93,8 @@ This app is built to demonstrate a blend of API integration, responsive design, 
   }
 
   Future getWeatherApi() async {
+    await Future.delayed(const Duration(seconds: 1));
     try {
-
-      setState(() {
-        isLoading = true;
-      });
 
       final reslt = await http.get(
         Uri.parse('https://api.openweathermap.org/data/2.5/forecast?q=$cityName&APPID=$openWeatherApiKey')
@@ -111,31 +106,27 @@ This app is built to demonstrate a blend of API integration, responsive design, 
         throw 'Reponse code : ${data['cod']}';
       }
 
-      setState(() {
+      bool steps = true;
+      for (int i = 0 ; steps ; i++) {
 
-        bool steps = true;
-        for (int i = 0 ; steps ; i++) {
+        DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(data['list'][i]['dt'] * 1000, isUtc: true);
 
-          DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(data['list'][i]['dt'] * 1000, isUtc: true);
+        if (
+          dateTime.hour >= DateTime.now().hour 
+          && dateTime.day >= DateTime.now().day
+        ) {
+            forecastTemp![0] = data['list'][i - 1];
+            forecastTemp![1] = data['list'][i];
+            forecastTemp![2] = data['list'][i + 1];
+            forecastTemp![3] = data['list'][i + 2];
 
-          if (
-            dateTime.hour >= DateTime.now().hour 
-            && dateTime.day >= DateTime.now().day
-          ) {
-              forecastTemp![0] = data['list'][i - 1];
-              forecastTemp![1] = data['list'][i];
-              forecastTemp![2] = data['list'][i + 1];
-              forecastTemp![3] = data['list'][i + 2];
-              steps = false;
-          }
-
+            steps = false;
+            break;
         }
 
-        isLoading = false;
-
-      });
-      
-      return data;
+      }
+    
+      return 0;
 
     }
     catch (e) {
@@ -184,7 +175,7 @@ This app is built to demonstrate a blend of API integration, responsive design, 
           future: getWeatherApi(),
           builder: (context, asyncSnapshot) {
 
-            // debugPrint('$asyncSnapshot');
+            debugPrint('${asyncSnapshot.connectionState}');
 
             if (asyncSnapshot.hasError) {
               return Center(
@@ -225,6 +216,9 @@ This app is built to demonstrate a blend of API integration, responsive design, 
                         padding: EdgeInsets.all(2),
                         onPressed: () {
                           debugPrint('refresh');
+                          setState(() {
+                            getWeatherApi(); // Re-fetch data
+                          });
                         },
                         icon: Icon(Icons.refresh_rounded),
                         splashRadius: 8,
@@ -379,7 +373,7 @@ This app is built to demonstrate a blend of API integration, responsive design, 
                               CarouselItem(
                                 textColr: secondColr,
                                 bgColr: limeColr,
-                                imgs: 'images/hot_level2.gif',
+                                imgs: getWeatherImage(forecastTemp?[1]['weather'][0]['main'], forecastTemp?[1]['main']['feels_like']),
             
                                 temperatureNum: (forecastTemp?[1]['main']['temp'] - 273.15).toStringAsFixed(2),
                                 timee: (forecastTemp![1]['dt_txt']).substring(11, 16),
@@ -389,21 +383,21 @@ This app is built to demonstrate a blend of API integration, responsive design, 
                               CarouselItem(
                                 textColr: primaryColr,
                                 bgColr: blueColr,
-                                imgs: 'images/rainfall_level1.gif',
+                                imgs: getWeatherImage(forecastTemp?[2]['weather'][0]['main'], forecastTemp?[2]['main']['feels_like']),
             
                                 temperatureNum: (forecastTemp?[2]['main']['temp'] - 273.15).toStringAsFixed(2),
                                 timee: (forecastTemp![2]['dt_txt']).substring(11, 16),
-                                ddate: (forecastTemp![1]['dt_txt']).substring(0, 10),
+                                ddate: (forecastTemp![2]['dt_txt']).substring(0, 10),
                               ),
             
                               CarouselItem(
                                 textColr: secondColr,
                                 bgColr: lightBlueColr,
-                                imgs: 'images/cold_level1.gif',
+                                imgs: getWeatherImage(forecastTemp?[3]['weather'][0]['main'], forecastTemp?[3]['main']['feels_like']),
             
                                 temperatureNum: (forecastTemp?[3]['main']['temp'] - 273.15).toStringAsFixed(2),
                                 timee: (forecastTemp![3]['dt_txt']).substring(11, 16),
-                                ddate: (forecastTemp![1]['dt_txt']).substring(0, 10),
+                                ddate: (forecastTemp![3]['dt_txt']).substring(0, 10),
                               ),
             
                             ],
@@ -495,7 +489,7 @@ This app is built to demonstrate a blend of API integration, responsive design, 
                         
                             NumItem(
                               colr: primaryColr, 
-                              textLabel: 'Wind (speed)', 
+                              textLabel: 'Wind speed', 
                               stringNum: (forecastTemp?[0]['wind']['speed']).toStringAsFixed(2),
                               ),
             

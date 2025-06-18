@@ -65,18 +65,26 @@ flutter:
     - images/hot_level1.gif
     - images/hot_level2.gif
     - images/hot_level3.gif
+    - images/hot_level4.gif
 
     - images/cold_level1.gif
     - images/cold_level2.gif
     - images/cold_level3.gif
     - images/cold_level4.gif
 
+    - images/rainfall_level0.gif
     - images/rainfall_level1.gif
     - images/rainfall_level2.gif
     - images/rainfall_level3.gif
 
+    - images/cloudy_level1.gif
+    - images/cloudy_level2.gif
+    - images/cloudy_level3.gif
+    - images/cloudy_level4.gif
+
     - images/running.gif
     - images/waterfall.gif
+    - images/waiting.gif
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

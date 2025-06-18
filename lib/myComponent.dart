@@ -1,5 +1,6 @@
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
+import "dart:math";
 
 //// The stateless widget below can be uses as item which is re-useable
 
@@ -190,13 +191,13 @@ class NumItem extends StatelessWidget {
         Container(
           height: 40,
           width: 90,
-          padding: EdgeInsets.all(8),
+          padding: EdgeInsets.all(6),
           // color: secondHlColr,
           child: Text(
           textLabel,
           textAlign: TextAlign.center,
           style: GoogleFonts.inconsolata(
-            fontSize: 16,
+            fontSize: 14,
             color: colr,
             fontWeight: FontWeight.normal,
             ),
@@ -320,3 +321,34 @@ class BottomInfo extends StatelessWidget {
 //     );
 //   }
 // }
+
+String getWeatherImage(String weathers, double feelTemp) {
+
+  String imageShow = 'images/waiting.gif';
+  
+  List<String> hotlst = ['images/hot_level1.gif', 'images/hot_level2.gif', 'images/hot_level3.gif', 'images/hot_level4.gif'];
+  List<String> coldlst = ['images/cold_level1.gif', 'images/cold_level2.gif', 'images/cold_level3.gif', 'images/cold_level4.gif'];
+  List<String> rainlst = ['images/rainfall_level0.gif', 'images/rainfall_level1.gif', 'images/rainfall_level2.gif', 'images/rainfall_level3.gif'];
+  List<String> cloudlst = ['images/cloudy_level1.gif', 'images/cloudy_level2.gif', 'images/cloudy_level3.gif', 'images/cloudy_level4.gif'];
+
+  switch (weathers) {
+    case 'Clear':
+
+      if (feelTemp <= 290) {
+        imageShow = coldlst[Random().nextInt(coldlst.length)];
+      } else {
+        imageShow = hotlst[Random().nextInt(hotlst.length)];
+      }
+      break;
+
+    case 'Clouds':
+      imageShow = cloudlst[Random().nextInt(cloudlst.length)];
+      break;
+
+    case 'Rain':
+      imageShow = rainlst[Random().nextInt(rainlst.length)];
+      break;
+  }
+
+  return imageShow;
+}
