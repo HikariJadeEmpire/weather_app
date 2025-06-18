@@ -1,6 +1,6 @@
 # My Weather App
 
-<b>Goals</b> : For educational purpose.
+<b>Goals</b> : For educational purpose. <br>
 <b>APIs source</b> : ```https://openweathermap.org/```
 
 ## Overview
