@@ -1,16 +1,15 @@
-# my_weather
+# My Weather App
 
-A new Flutter project.
+<b>Goals</b> : For educational purpose.
+<b>APIs source</b> : ```https://openweathermap.org/```
 
-## Getting Started
+## Overview
 
-This project is a starting point for a Flutter application.
+https://github.com/user-attachments/assets/a5691682-2e9c-49cb-b6b4-d461562ba482
 
-A few resources to get you started if this is your first Flutter project:
+## Descriptions
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- <b>What is the app used for ?</b> : For observing weather data by getting some API
+- <b>Framework</b> : Flutter
+- <b>Details</b> : If you wonder how I wrote this app, Please check on ```lib``` folders
+- <b>Features</b> : By now users can only look at it or swipe around. There is only one action to do with this app is clicking on ```refresh``` button
